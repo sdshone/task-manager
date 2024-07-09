@@ -49,8 +49,17 @@ app.listen(port, (err) => {
 
 
 app.get("/tasks", (req, res) =>{
-    res.send(tasks)
+    res.send(tasks);
 })
 
+
+app.get("/tasks/:id", (req, res) =>{
+  const id = req.params.id;
+  const task = tasks.find(task =>  task.id === parseInt(id));
+  if (!task) {
+      res.status(404).send('The task with that ID does not exist.');
+  }
+  res.send(task);
+})
 
 module.exports = app;
