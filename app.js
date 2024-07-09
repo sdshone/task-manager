@@ -68,4 +68,17 @@ app.post("/tasks", (req, res) => {
   res.send(task);
 })
 
+app.put("/tasks/:id", (req, res) => {
+  const id = req.params.id;
+  const task = tasks.find(task =>  task.id === parseInt(id));
+  if (!task) {
+      res.status(404).send('The task with that ID does not exist.')
+  }
+  const { title, description, completed } = req.body;
+  task.title = title;
+  task.description = description;
+  task.completed = completed;
+  res.send(task);
+})
+
 module.exports = app;
