@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Array to store tasks
-tasks = [
+let tasks = [
     {
       "id": 1,
       "title": "Set up environment",
@@ -40,6 +40,12 @@ tasks = [
     },
   ]
 
+// The length of tasks doesn't always work correctly as we might delete some old tasks
+// This method guarantees we will always have unused ID.
+task_id_counter = tasks.reduce((accumulator, currentValue) => {
+    return Math.max(accumulator, currentValue);
+}, tasks[0]);
+
 app.listen(port, (err) => {
     if (err) {
         return console.log('Something bad happened', err);
@@ -63,9 +69,33 @@ app.get("/tasks/:id", (req, res) =>{
 
 app.post("/tasks", (req, res) => {
     const task = req.body
-    task.id = tasks.length + 1;
+
+    // Input validation for task creation. 
+    // Validate that the title and description are not empty, and that the completion status is a boolean value.
+    if (!('title' in task) || !('description' in task) || !('completed' in task))  {
+        res.status(400).send("Invalid data for new task. Please send title, description and completed.");
+    }
+    if (typeof(task.title) !== 'string') {
+        res.status(400).send(`Task title type cannot be of type ${typeof(task.title)}. Expected string.`)
+    }
+    if (typeof(task.description) !== 'string') {
+        res.status(400).send(`Task description cannot be of type ${typeof(task.description)}. Expected string.`)
+    }
+    if (typeof(task.completed) !== 'boolean') {
+        res.status(400).send(`Task completed cannot be of type ${typeof(task.completed)}. Expected boolean.`)
+    }
+    if (task.title === '') {
+        res.status(400).send('Task title cannot be empty.')
+    }
+    if (task.description === '') {
+        res.status(400).send('Task description cannot be empty.')
+    }
+
+    task_id_counter += 1;
+    task.id = task_id_counter;
+    
     tasks.push(task);
-    res.send(task);
+    res.status(201).send(task);
 })
 
 app.put("/tasks/:id", (req, res) => {
