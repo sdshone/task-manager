@@ -53,43 +53,43 @@ app.get("/tasks", (req, res) =>{
 })
 
 app.get("/tasks/:id", (req, res) =>{
-  const id = req.params.id;
-  const task = tasks.find(task =>  task.id === parseInt(id));
-  if (!task) {
-      res.status(404).send('The task with that ID does not exist.');
-  }
-  res.send(task);
+    const id = req.params.id
+    const task = tasks.find(task =>  task.id === parseInt(id));
+    if (!task) {
+        res.status(404).send('The task with that ID does not exist.');
+    }
+    res.send(task)
 })
 
 app.post("/tasks", (req, res) => {
-  const task = req.body
-  task.id = tasks.length + 1;
-  tasks.push(task);
-  res.send(task);
+    const task = req.body
+    task.id = tasks.length + 1;
+    tasks.push(task);
+    res.send(task);
 })
 
 app.put("/tasks/:id", (req, res) => {
-  const id = req.params.id;
-  const task = tasks.find(task =>  task.id === parseInt(id));
-  if (!task) {
-      res.status(404).send('The task with that ID does not exist.')
-  }
-  const { title, description, completed } = req.body;
-  task.title = title;
-  task.description = description;
-  task.completed = completed;
-  res.send(task);
+    const id = req.params.id;
+    const task = tasks.find(task =>  task.id === parseInt(id));
+    if (!task) {
+        res.status(404).send('The task with that ID does not exist.')
+    }
+    const { title, description, completed } = req.body;
+    task.title = title;
+    task.description = description;
+    task.completed = completed;
+    res.send(task);
 })
 
 app.delete("/tasks/:id", (req, res) => {
-  const id = req.params.id;
-  const task = tasks.find(task =>  task.id === parseInt(id));
-  if (!task) {
-      res.status(404).send('The task with that ID does not exist.')
-  }
-  const index = tasks.indexOf(task);
-  tasks.splice(index, 1);
-  res.send(task);
+    const id = req.params.id;
+    const task = tasks.find(task =>  task.id === parseInt(id));
+    if (!task) {
+        res.status(404).send('The task with that ID does not exist.')
+    }
+    const index = tasks.indexOf(task);
+    tasks.splice(index, 1);
+    res.send(task);
 })
 
 module.exports = app;
