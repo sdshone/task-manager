@@ -1,3 +1,4 @@
+const fs = require('node:fs');
 const express = require('express');
 const validator = require('./validator.js')
 const { default: t } = require('tap');
@@ -7,55 +8,28 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Array to store tasks
-let tasks = [
-    {
-      "id": 1,
-      "title": "Set up environment",
-      "description": "Install Node.js, npm, and git",
-      "completed": true,
-      "priority": "high",
-      "createdAt": new Date("2024-07-01T10:00:00Z")
-    },
-    {
-      "id": 2,
-      "title": "Create a new project",
-      "description": "Create a new project using the Express application generator",
-      "completed": true,
-      "priority": "high",
-      "createdAt": new Date("2024-07-02T10:00:00Z")
-    },
-    {
-      "id": 3,
-      "title": "Install nodemon",
-      "description": "Install nodemon as a development dependency",
-      "completed": true,
-      "priority": "low",
-      "createdAt": new Date("2024-07-03T10:00:00Z")
-    },
-    {
-      "id": 4,
-      "title": "Install Express",
-      "description": "Install Express",
-      "priority": "medium",
-      "completed": false,
-      "createdAt": new Date("2024-07-04T10:00:00Z")
-    },
-    {
-      "id": 5,
-      "title": "Install Mongoose",
-      "description": "Install Mongoose",
-      "priority": "low",
-      "completed": false,
-      "createdAt": new Date("2024-07-05T10:00:00Z")
-    },
-]
+const tasksPath = './task.json';
 
-// The length of tasks doesn't always work correctly as we might delete some old tasks
-// This method guarantees we will always have unused ID.
-let task_id_counter = tasks.reduce((accumulator, currentValue) => {
-    return Math.max(accumulator, currentValue);
-}, tasks[0]);
+// Initialize tasks and task_id_counter variables
+let tasks = [];
+let task_id_counter = 0;
+
+fs.readFile(tasksPath, (err, data) => {
+    if (err) {
+        console.error('Error reading tasks file:', err);
+        return;
+    }
+    tasks = JSON.parse(data).tasks;
+    console.log('Tasks loaded from file:', tasks);
+
+    // Calculate task_id_counter after tasks are loaded
+    task_id_counter = tasks.reduce((accumulator, task) => {
+        return Math.max(accumulator, parseInt(task.id));
+    }, 0); // Start counting from the next number
+
+    console.log('Task ID counter:', task_id_counter);
+});
+
 
 app.listen(port, (err) => {
     if (err) {
