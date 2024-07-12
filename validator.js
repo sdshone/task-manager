@@ -11,6 +11,9 @@ module.exports =
         if (typeof(task.description) !== 'string') {
             return `Task description cannot be of type ${typeof(task.description)}. Expected string.`
         }
+        if (typeof(task.priority) !== 'string') {
+            return `Task priority cannot be of type ${typeof(task.priority)}. Expected string.`
+        }
         if (typeof(task.completed) !== 'boolean') {
             return `Task completed cannot be of type ${typeof(task.completed)}. Expected boolean.`
         }
@@ -19,6 +22,9 @@ module.exports =
         }
         if (task.description === '') {
             return "Task description cannot be empty."
+        }
+        if (!["high", "medium", "low"].includes(task.priority)) {
+            return `Task priority cannot be ${task.level}. Valid options [high/medium/low].`
         }
         return "All inputs valid."
     }

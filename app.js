@@ -111,7 +111,7 @@ app.post("/tasks", (req, res) => {
 
     // Input validation for task creation. 
     // Validate that the title and description are not empty, and that the completion status is a boolean value.
-    validator_output = validator.task_structure_validation(task)
+    validator_output = validator.task_structure_validation(task);
     if (validator_output === "All inputs valid.") {
         task_id_counter += 1;
         task.id = task_id_counter;
@@ -143,10 +143,6 @@ app.put("/tasks/:id", (req, res) => {
     } else {
         res.status(404).send('The task with that ID does not exist.')
     }
-
-
-
-
 })
 
 app.delete("/tasks/:id", (req, res) => {
