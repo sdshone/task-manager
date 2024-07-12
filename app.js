@@ -61,7 +61,15 @@ app.listen(port, (err) => {
 
 
 app.get("/tasks", (req, res) =>{
-    res.send(tasks);
+    const { sortBy = '' } = req.query;
+    let sortedTasks = [...tasks];
+    console.log(sortBy)
+    if (sortBy === 'date') {
+        tasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (sortBy === '-date') {
+        sortedTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    res.send(sortedTasks);
 })
 
 app.get("/tasks/:id", (req, res) =>{
