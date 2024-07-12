@@ -1,4 +1,5 @@
 const express = require('express');
+const validator = require('./validator.js')
 const { default: t } = require('tap');
 const app = express();
 const port = 3000;
@@ -72,23 +73,9 @@ app.post("/tasks", (req, res) => {
 
     // Input validation for task creation. 
     // Validate that the title and description are not empty, and that the completion status is a boolean value.
-    if (!('title' in task) || !('description' in task) || !('completed' in task))  {
-        res.status(400).send("Invalid data for new task. Please send title, description and completed.");
-    }
-    if (typeof(task.title) !== 'string') {
-        res.status(400).send(`Task title type cannot be of type ${typeof(task.title)}. Expected string.`)
-    }
-    if (typeof(task.description) !== 'string') {
-        res.status(400).send(`Task description cannot be of type ${typeof(task.description)}. Expected string.`)
-    }
-    if (typeof(task.completed) !== 'boolean') {
-        res.status(400).send(`Task completed cannot be of type ${typeof(task.completed)}. Expected boolean.`)
-    }
-    if (task.title === '') {
-        res.status(400).send('Task title cannot be empty.')
-    }
-    if (task.description === '') {
-        res.status(400).send('Task description cannot be empty.')
+    validator_output = validator.task_structure_validation(task)
+    if (validator_output !== "All inputs valid.") {
+        res.status(400).send(validator_output)
     }
 
     task_id_counter += 1;
@@ -104,7 +91,15 @@ app.put("/tasks/:id", (req, res) => {
     if (!task) {
         res.status(404).send('The task with that ID does not exist.')
     }
-    const { title, description, completed } = req.body;
+
+    // Input validation for task creation. 
+    // Validate that the title and description are not empty, and that the completion status is a boolean value.
+    validator_output = validator.task_structure_validation(req.body);
+    if (validator_output !== "All inputs valid.") {
+        res.status(400).send(validator_output)
+    }
+
+    const {title, description, completed } = req.body
     task.title = title;
     task.description = description;
     task.completed = completed;
