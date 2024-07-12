@@ -61,15 +61,24 @@ app.listen(port, (err) => {
 
 
 app.get("/tasks", (req, res) =>{
-    const { sortBy = '' } = req.query;
-    let sortedTasks = [...tasks];
-    console.log(sortBy)
-    if (sortBy === 'date') {
-        tasks.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    } else if (sortBy === '-date') {
-        sortedTasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const { sortBy = '', completed = 'all' } = req.query;
+    let result = [...tasks];
+
+    if (completed === 'true') {
+        result = tasks.filter(task => task.completed === true);
     }
-    res.send(sortedTasks);
+    else if (completed === 'false') {
+        result = tasks.filter(task => task.completed === false);
+    }
+
+    if (sortBy === 'date') {
+        result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (sortBy === '-date') {
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+
+    res.send(result);
 })
 
 app.get("/tasks/:id", (req, res) =>{
