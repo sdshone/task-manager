@@ -13,31 +13,36 @@ let tasks = [
       "id": 1,
       "title": "Set up environment",
       "description": "Install Node.js, npm, and git",
-      "completed": true
+      "completed": true,
+      "createdAt": new Date("2024-07-01T10:00:00Z")
     },
     {
       "id": 2,
       "title": "Create a new project",
       "description": "Create a new project using the Express application generator",
-      "completed": true
+      "completed": true,
+      "createdAt": new Date("2024-07-02T10:00:00Z")
     },
     {
       "id": 3,
       "title": "Install nodemon",
       "description": "Install nodemon as a development dependency",
-      "completed": true
+      "completed": true,
+      "createdAt": new Date("2024-07-03T10:00:00Z")
     },
     {
       "id": 4,
       "title": "Install Express",
       "description": "Install Express",
-      "completed": false
+      "completed": false,
+      "createdAt": new Date("2024-07-04T10:00:00Z")
     },
     {
       "id": 5,
       "title": "Install Mongoose",
       "description": "Install Mongoose",
-      "completed": false
+      "completed": false,
+      "createdAt": new Date("2024-07-05T10:00:00Z")
     },
   ]
 
@@ -80,7 +85,7 @@ app.post("/tasks", (req, res) => {
 
     task_id_counter += 1;
     task.id = task_id_counter;
-    
+    task.createdAt =  new Date().toISOString();
     tasks.push(task);
     res.status(201).send(task);
 })
