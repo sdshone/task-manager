@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+const tasks_file = require('./task.json');
 const express = require('express');
 const validator = require('./validator.js')
 const { default: t } = require('tap');
@@ -8,27 +8,17 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const tasksPath = './task.json';
-
 // Initialize tasks and task_id_counter variables
-let tasks = [];
-let task_id_counter = 0;
+tasks = tasks_file.tasks
+console.log('Tasks loaded from file:', tasks);
 
-fs.readFile(tasksPath, (err, data) => {
-    if (err) {
-        console.error('Error reading tasks file:', err);
-        return;
-    }
-    tasks = JSON.parse(data).tasks;
-    console.log('Tasks loaded from file:', tasks);
+// Calculate task_id_counter after tasks are loaded
+let task_id_counter = tasks.reduce((accumulator, task) => {
+    return Math.max(accumulator, parseInt(task.id));
+}, 0); // Start counting from the next number
 
-    // Calculate task_id_counter after tasks are loaded
-    task_id_counter = tasks.reduce((accumulator, task) => {
-        return Math.max(accumulator, parseInt(task.id));
-    }, 0); // Start counting from the next number
+console.log('Task ID counter:', task_id_counter);
 
-    console.log('Task ID counter:', task_id_counter);
-});
 
 
 app.listen(port, (err) => {
@@ -56,10 +46,10 @@ app.get("/tasks", (req, res) =>{
     let result = [...tasks];
 
     if (completed === 'true') {
-        result = tasks.filter(task => task.completed === true);
+        result = result.filter(task => task.completed === true);
     }
     else if (completed === 'false') {
-        result = tasks.filter(task => task.completed === false);
+        result = result.filter(task => task.completed === false);
     }
 
     if (sortBy === 'date') {
@@ -72,7 +62,7 @@ app.get("/tasks", (req, res) =>{
 })
 
 app.get("/tasks/:id", (req, res) =>{
-    const id = req.params.id
+    const {id} = req.params
     const task = tasks.find(task =>  task.id === parseInt(id));
     if (!task) {
         res.status(404).send('The task with that ID does not exist.');
@@ -99,7 +89,7 @@ app.post("/tasks", (req, res) => {
 })
 
 app.put("/tasks/:id", (req, res) => {
-    const id = req.params.id;
+    const {id} = req.params;
     const task = tasks.find(task =>  task.id === parseInt(id));
     if (task) {
         // Input validation for task creation. 
@@ -120,7 +110,7 @@ app.put("/tasks/:id", (req, res) => {
 })
 
 app.delete("/tasks/:id", (req, res) => {
-    const id = req.params.id;
+    const {id} = req.params;
     const task = tasks.find(task =>  task.id === parseInt(id));
     if (task) {
         const index = tasks.indexOf(task);
