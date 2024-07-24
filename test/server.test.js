@@ -107,3 +107,45 @@ tap.test("DELETE /tasks/:id with invalid id", async (t) => {
 tap.teardown(() => {
   process.exit(0);
 });
+
+
+// New tests to test extension
+
+tap.test("GET /tasks completed=true", async (t) => {
+  const response = await server.get("/tasks?completed=true");
+  t.equal(response.status, 200);
+  response.body.forEach(task => {
+    t.equal(task.completed, true);
+  });
+  t.end();
+});
+
+tap.test("GET /tasks completed=false", async (t) => {
+  const response = await server.get("/tasks?completed=false");
+  t.equal(response.status, 200);
+  response.body.forEach(task => {
+    t.equal(task.completed, false);
+  });
+  t.end();
+});
+
+tap.test("GET /tasks sortBy=date", async (t) => {
+  const response = await server.get("/tasks?sortBy=date");
+  t.equal(response.status, 200);
+  for (let i = 1; i < response.body.length; i++) {
+    console.log(response.body[i].id)
+    console.log(response.body[i - 1].createdAt, new Date(response.body[i].createdAt))
+    t.ok(new Date(response.body[i - 1].createdAt) <= new Date(response.body[i].createdAt));
+  }
+  t.end();
+});
+
+tap.test("GET /tasks sortBy=-date", async (t) => {
+  const response = await server.get("/tasks?sortBy=-date");
+  t.equal(response.status, 200);
+  for (let i = 1; i < response.body.length; i++) {
+    console.log(response.body[i - 1].createdAt, new Date(response.body[i].createdAt))
+    t.ok(new Date(response.body[i - 1].createdAt) >= new Date(response.body[i].createdAt));
+  }
+  t.end();
+});
